@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+echo "###################################"
+echo "#    Start MIKA before process    #"
+echo "###################################"
+
+# yes | rm -rf /etc/pacman.d/gnupg/* || echo "Cannot delete gnupg/*"
+# pacman-key --init || echo "Error initializing keys"
+# pacman-key --recv-key 5AB3C7BA5CC6FAD1B4BAB2ECA62D56CABD8DD76E || echo "Error receiving key"
+# pacman-key --lsign-key 5AB3C7BA5CC6FAD1B4BAB2ECA62D56CABD8DD76E || echo "Error locally signing key"
+# pacman-key --populate archlinux || echo "Error populating 'archlinux'"
+# pacman -Syy
+
+# pacman-key --init
+# pacman-key --populate
+
+echo "###################################"
+echo "#    Start MIKA before process    #"
+echo "###################################"
+# rm /usr/local/bin/dtos-before
+
+

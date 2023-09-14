@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Mika System Updater
+Exec=konsole --hold -e /usr/local/bin/script.sh
+Type=Application
+Icon=/usr/share/applications/updateicon.png
+Categories=Utility;

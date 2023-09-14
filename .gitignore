@@ -1,0 +1,5 @@
+*.iso
+out/
+work/
+recently-used.xbel
+recently-used.xbel.bak

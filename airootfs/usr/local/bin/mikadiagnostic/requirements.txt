@@ -1,0 +1,6 @@
+psutil==5.9.5
+GPUtil==1.4.0
+py-cpuinfo==9.0.0
+matplotlib==3.7.1
+wmi
+cpu_load_generator

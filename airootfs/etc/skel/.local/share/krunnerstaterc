@@ -1,0 +1,5 @@
+[PlasmaRunnerManager]
+LaunchCounts=3 exec:///usr/bin/konsole,2 exec:///usr/bin/discord,1 exec:///usr/bin/install
+
+[PlasmaRunnerManager][History]
+6ac7b5d9-6fd4-4621-8046-3181b600cb1a=kon,ko,d,disco,install

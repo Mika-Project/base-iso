@@ -1,0 +1,4 @@
+neofetch
+exit
+top
+exit

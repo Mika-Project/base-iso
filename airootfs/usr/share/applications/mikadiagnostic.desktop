@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Mika System Diagnostic Tool
+Terminal=true
+Exec=konsole -e "sh -c /usr/local/bin/mikadiagnostic/mikarun.sh"
+Type=Application
+Icon=/usr/share/applications/diagnostic.png
+Categories=Utility;

@@ -1,0 +1,45 @@
+---
+componentName:  default
+
+welcomeStyleCalamares:   false
+
+welcomeExpandingLogo:   true
+
+windowExpanding:    noexpand
+windowSize: 1280px,720px
+windowPlacement: center
+
+# sidebar: qml,top
+sidebar: none
+
+strings:
+    productName:         MIKA-LINUX
+    shortProductName:    MIKA
+    version:             2023.08
+    shortVersion:        2023.08
+    versionedName:       MIKA
+    shortVersionedName:  MIKA
+    bootloaderEntryName: MIKA
+    productUrl:          https://mika-linux.com/
+    supportUrl:          https://github.com/Mika-Project/base-iso/issues
+    releaseNotesUrl:     https://github.com/Mika-Project/base-iso/releases
+
+
+uploadServer :
+    type :    "fiche"
+    url :     "http://termbin.com:9999"
+    sizeLimit : -1
+    
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "Welcome.png"
+
+slideshow:               "show.qml"
+    
+slideshowAPI: 1
+
+style:
+   SidebarBackground:    "#282c34"
+   SidebarText:          "#000000"
+   SidebarBackgroundCurrent: "#895c7e"

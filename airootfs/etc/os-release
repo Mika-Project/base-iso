@@ -1,0 +1,13 @@
+NAME="Mika Linux"
+PRETTY_NAME="Mika Linux"
+ID="mikalinux"
+ID_LIKE="arch"
+BUILD_ID=""
+ANSI_COLOR="38;2;255;105;180"
+HOME_URL="https://mika-linux.com"
+SUPPORT_URL="https://discord.mika-linux.com"
+BUG_REPORT_URL="https://github.com/Mika-Project/base-iso/issues"
+PRIVACY_POLICY_URL=""
+LOGO="/usr/share/icons/mikalinuxlogo.png"
+IMAGE_ID=Mika Linux
+IMAGE_VERSION=2023.09.13
