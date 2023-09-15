@@ -27,7 +27,7 @@ Kirigami.ScrollablePage {
     readonly property color unfilledFieldOutlineColor: "#1F1F1F"
     readonly property color positiveFieldOutlineColor: "#DCFFDC"
     readonly property color negativeFieldOutlineColor: "#BE5F68"
-    readonly property color headerTextColor: "#FFFFFF"
+    readonly property color headerTextColor: "#000000"
     readonly property color commentsColor: "#FFFFFF"
 
     width: parent.width

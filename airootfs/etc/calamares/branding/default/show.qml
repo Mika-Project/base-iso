@@ -104,8 +104,4 @@ Presentation
     ImageSlide {
         src: "slide-04.png"
     }
-
-    ImageSlide {
-        src: "slide-05.png"
-    }
 }
