@@ -21,3 +21,5 @@ You can find the ISO file inside out directory.
 >to auto remove the `work` directory, you can build the ISO with command:
 
 `sudo mkarchiso -v -r .`
+
+>instead of `sudo mkarchiso -v .`
