@@ -48,7 +48,7 @@ less
 lftp
 libfido2
 libusb-compat
-linux
+linux-lts
 linux-atm
 linux-firmware
 linux-firmware-marvell
@@ -160,6 +160,8 @@ zenity
 htop
 btop
 xdg-user-dirs
+cmake
+# yay
 
 networkmanager
 gparted
