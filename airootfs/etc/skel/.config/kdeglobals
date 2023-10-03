@@ -96,6 +96,9 @@ ForegroundVisited=68,71,90
 [General]
 ColorSchemeHash=01662607e36cd33eacc7d7d7189f69c26b9a2cc8
 
+[Icons]
+Theme=breeze-dark
+
 [KDE]
 LookAndFeelPackage=Dracula
 
