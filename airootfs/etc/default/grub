@@ -2,20 +2,10 @@
 
 GRUB_DEFAULT='0'
 GRUB_TIMEOUT='5'
-GRUB_DISTRIBUTOR='Mika'
-GRUB_CMDLINE_LINUX_DEFAULT='nowatchdog nvme_load=YES resume=UUID=495b6c51-826d-4e90-b812-3437b6c1e361 quiet loglevel=4' # Change loglevel=<level> if needed for debugging (lets hope its not needed.)
+GRUB_DISTRIBUTOR='MikaLinux'
+GRUB_CMDLINE_LINUX_DEFAULT='nowatchdog nvme_load=YES resume=UUID=495b6c51-826d-4e90-b812-3437b6c1e361 loglevel=3'
 GRUB_CMDLINE_LINUX=""
 
-#  ---------- LOG LEVELS GRUB ----------
-# 0 (KERN_EMERG)          system is unusable
-# 1 (KERN_ALERT)          action must be taken immediately
-# 2 (KERN_CRIT)           critical conditions
-# 3 (KERN_ERR)            error conditions
-# 4 (KERN_WARNING)        warning conditions
-# 5 (KERN_NOTICE)         normal but significant condition
-# 6 (KERN_INFO)           informational
-# 7 (KERN_DEBUG)          debug-level messages
-# --------------------------------------
 # Preload both GPT and MBR modules so that they are not missed
 GRUB_PRELOAD_MODULES="part_gpt part_msdos"
 
