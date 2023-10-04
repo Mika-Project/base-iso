@@ -27,7 +27,6 @@ You can find the ISO file inside out directory.
 - Install the optional dependencies qemu-desktop and edk2-ovmf.
 `sudo pacman -S qemu-desktop edk2-ovmf`
 
-
 ### MBR
 `run_archiso -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
 
@@ -36,5 +35,5 @@ You can find the ISO file inside out directory.
 `run_archiso -u -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
 
 ## Known-issues
-- [ ] unable to read due to background
+- [ ] difficult to read calamares due to background
 - [ ] No volume control
