@@ -1,11 +1,7 @@
-# base-iso
+## Required packages for building iso
+- archiso & git
 
-## Prerequisites
-
-- archiso
-- git
-
-`yay -S archiso git`
+`sudo pacman -S archiso git`
 
 ## Installation and Build
 ```bash
@@ -23,3 +19,22 @@ You can find the ISO file inside out directory.
 `sudo mkarchiso -v -r .`
 
 >instead of `sudo mkarchiso -v .`
+
+
+
+## Quicky Test the ISO using QEMU
+
+- Install the optional dependencies qemu-desktop and edk2-ovmf.
+`sudo pacman -S qemu-desktop edk2-ovmf`
+
+
+### MBR
+`run_archiso -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
+
+### UEFI
+
+`run_archiso -u -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
+
+## Known-issues
+- [ ] unable to read due to background
+- [ ] No volume control

@@ -149,7 +149,6 @@ base-devel
 linux-headers
 neofetch
 nano
-mousepad
 konsole
 thunar
 mpv
@@ -172,15 +171,17 @@ xdg-user-dirs
 calamares
 qt5-tools
 
+# added package for plasma
+plasma-nm
+kate
 
-# Sound
-
+# Audio
 pipewire
 pipewire-alsa
 pipewire-jack
 pipewire-pulse
 pipewire-zeroconf
-
+wireplumber
 
 # Fonts
 ttf-jetbrains-mono-nerd
@@ -190,3 +191,4 @@ ttf-ubuntu-font-family
 ttf-dejavu
 ttf-liberation
 ttf-opensans
+noto-fonts-cjk
