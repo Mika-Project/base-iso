@@ -77,7 +77,7 @@ Kirigami.ScrollablePage {
 
             Label {
                 width: parent.width
-                text: qsTr("What name do you want to use to log in?")
+                text: qsTr("\nWhat name do you want to use to log in?\n(This will be your username that you'll be using to log in to your computer.)")
             }
 
             TextField {
@@ -136,7 +136,7 @@ Kirigami.ScrollablePage {
 
             Label {
                 width: parent.width
-                text: qsTr("What is the hostname of this computer?")
+                text: qsTr("\nWhat is the hostname of this computer?\n(This is the name that will be used to identify this computer on the network. If you don't know what to put here, you can leave it as it is.)")
             }
 
             TextField {
@@ -192,7 +192,7 @@ Kirigami.ScrollablePage {
 
             Label {
                 width: parent.width
-                text: qsTr("Choose a password to keep your account safe.")
+                text: qsTr("\nChoose a password to keep your account safe.\n(You will be asked for this password when you log in to your computer, or when an application needs higher privileges.)")
             }
 
             Row {
@@ -269,7 +269,7 @@ Kirigami.ScrollablePage {
         CheckBox {
             id: root
             visible: config.writeRootPassword
-            text: qsTr("Use the same password for the administrator account.")
+            text: qsTr("Use the same password for the administrator account.\n(This is an account that has special privileges to perform system tasks, you most likely won't ever use this account. So leave the settings as is if you're not sure what to do.)")
             checked: config.reuseUserPasswordForRoot
             onCheckedChanged: config.setReuseUserPasswordForRoot(checked)
         }
