@@ -112,7 +112,7 @@ Page {
                     id: zone
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: Kirigami.Theme.textColor
-                    text: qsTr("Select your preferred Zone within your Region.")
+                    text: qsTr("Select your preferred Zone within your Region. You can fine-tune Language and Locale settings below.")
                 }
 
                 ListView {
