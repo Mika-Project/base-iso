@@ -230,7 +230,7 @@ Page {
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
             Kirigami.Theme.backgroundColor: Kirigami.Theme.backgroundColor
-            text: qsTr("You can fine-tune Language and Locale settings below.")
+            text: qsTr("You can fine-tune Language and Locale settings below. If you are unsure, leave the default settings.")
         }
     }
 }
