@@ -21,8 +21,9 @@ strings:
     shortVersionedName:  MIKA
     bootloaderEntryName: MIKA
     productUrl:          https://mika-linux.com/
-    supportUrl:          https://github.com/Mika-Project/base-iso/issues
+    supportUrl:          https://discord.gg/28PpBJYZPb
     releaseNotesUrl:     https://github.com/Mika-Project/base-iso/releases
+    knownIssuesUrl:      https://github.com/Mika-Project/base-iso/issues
 
 
 uploadServer :
