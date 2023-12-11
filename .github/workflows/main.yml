@@ -19,5 +19,5 @@ jobs:
     - name: cd into working directory
       run: cd /home/lucy/runner-tests/base-iso
 
-    - name: Run Command 2
+    - name: Buuild the Arch ISO
       run: sudo mkarchiso -v -r .
