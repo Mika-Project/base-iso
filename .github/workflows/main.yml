@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Clone the REPO
+    - name: Clone the repository
       run: git clone https://github.com/Mika-Project/base-iso.git /home/lucy/runner-tests/base-iso
 
     - name: cd into working directory
