@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: (Prerequisite) Removing old files if exists
-      uses: sudo rm -rf /home/lucy/runner-tests/base-iso
+      run: sudo rm -rf /home/lucy/runner-tests/base-iso
 
     - name: Clone the repository
       run: git clone https://github.com/Mika-Project/base-iso.git /home/lucy/runner-tests/base-iso
