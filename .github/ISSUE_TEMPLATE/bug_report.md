@@ -13,6 +13,7 @@ assignees: Luciousdev
 **Which version did I used**
 - [ ] Newest stable release
 - [ ] Beta release
+- [ ] Dev/git build
 
 **Describe the bug**
 A clear and concise description of what the bug is.
