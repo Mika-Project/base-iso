@@ -3,8 +3,8 @@
 
 iso_name="Mika Linux"
 iso_label="project-mika_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
-iso_publisher="Mika Linux <https://luciousdev.nl>"
-iso_application="Mika Linux Live/Rescue CD"
+iso_publisher="Mika Linux <https://mika-linux.com>"
+iso_application="Mika Linux Installation CD"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
