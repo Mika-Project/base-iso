@@ -1,6 +1,7 @@
 ## Required packages for building iso
 
-- archiso & git
+- archiso
+- git
 
 `sudo pacman -S archiso git`
 
