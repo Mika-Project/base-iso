@@ -1,8 +1,8 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: bug
+title: "[BUG]"
+labels: bug, To Refine
 assignees: Luciousdev
 
 ---
@@ -34,6 +34,12 @@ If applicable, add screenshots to help explain your problem.
 **Basic system info:**
  - OS: [e.g. iOS]
  - Version [e.g. 22]
+
+**To verify**
+
+1. Can this issue be done by one engineer? [Yes/No]
+2. Are there any dependencies? [Yes/No]
+
 
 **Additional context**
 Add any other context about the problem here.
