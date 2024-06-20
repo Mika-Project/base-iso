@@ -47,8 +47,3 @@ You can find the ISO file inside out directory.
 ### UEFI
 
 `run_archiso -u -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
-
-## Known-issues
-
-- [ ] difficult to read calamares due to background [(#4)](https://github.com/Mika-Project/base-iso/issues/4)
-- [ ] No volume control
