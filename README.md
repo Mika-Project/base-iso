@@ -9,6 +9,15 @@
 
 - a.)
 
+### Note
+
+Before building please run the following commands to add a localtime file. (It does not have to be UTC timezone can also be something else.)
+
+```bash
+cd /path/to/archiso/configs/baseline/airootfs/etc
+ln -sf /usr/share/zoneinfo/UTC localtime
+```
+
 ```bash
 git clone https://github.com/Mika-Project/base-iso
 cd base-iso
