@@ -4,23 +4,24 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: arch-server
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: (Prerequisite) Removing old files if exists
-      run: sudo rm -rf /home/lucy/actions-runner/_work/base-iso
+      run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso
 
     - name: Clone the repository
-      run: git clone https://github.com/Mika-Project/base-iso.git /home/lucy/runner-tests/base-iso
+      run: git clone https://github.com/Mika-Project/base-iso.git /home/luciousdev/runner-tests/base-iso
 
     - name: cd into working directory
-      run: cd /home/lucy/runner-tests/base-iso
+      run: cd /home/luciousdev/runner-tests/base-iso
 
     - name: Build the Arch ISO
       run: sudo mkarchiso -v -r .
