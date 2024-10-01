@@ -7,11 +7,10 @@
 
 ## Installation and Build
 
-- a.)
+### Option 1 (<16gb RAM)
 
-### Note
-
-Before building please run the following commands to add a localtime file. (It does not have to be UTC timezone can also be something else.)
+> [!IMPORTANT]
+> Before building please run the following commands to add a localtime file. (It does not have to be UTC timezone can also be something else.)
 
 ```bash
 cd /path/to/archiso/configs/baseline/airootfs/etc
@@ -27,7 +26,7 @@ sudo mkarchiso -v .
 Two directories will be created (`work` and `out`).
 You can find the ISO file inside out directory.
 
-- b.) if you have more ram (>16gb)
+### if you have more RAM (>16gb)
 
 ```bash
 git clone https://github.com/Mika-Project/base-iso
