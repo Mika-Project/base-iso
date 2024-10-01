@@ -14,7 +14,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: (Prerequisite) Removing old files if exists
+    - name: Removing old files from previous builds
       run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso
 
     - name: Clone the repository
