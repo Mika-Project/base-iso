@@ -13,6 +13,9 @@ jobs:
       - Arch
 
     steps:
+    - name: Removing old files from previous builds
+      run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso/base-iso
+    
     - name: Checkout repository
       uses: actions/checkout@v2
 
