@@ -15,9 +15,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
-    - name: Removing old files from previous builds
-      run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso/base-iso/*
 
     - name: Clone the repository
       run: git clone https://github.com/Mika-Project/base-iso.git
