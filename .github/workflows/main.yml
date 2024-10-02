@@ -20,10 +20,10 @@ jobs:
       run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso
 
     - name: Clone the repository
-      run: git clone https://github.com/Mika-Project/base-iso.git /home/luciousdev/runner-tests/base-iso
+      run: git clone https://github.com/Mika-Project/base-iso.git /home/luciousdev/actions-runner/_work/base-iso
 
     - name: cd into working directory
-      run: cd /home/luciousdev/runner-tests/base-iso
+      run: cd /home/luciousdev/actions-runner/_work/base-iso/base-iso
 
     - name: Build the Arch ISO
       run: sudo mkarchiso -v -r .
