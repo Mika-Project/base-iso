@@ -8,7 +8,9 @@ on:
 
 jobs:
   build:
-    runs-on: archserver
+    runs-on:
+      - self-hosted
+      - Arch
 
     steps:
     - name: Checkout repository
