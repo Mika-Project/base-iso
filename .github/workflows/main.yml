@@ -17,10 +17,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Removing old files from previous builds
-      run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso
+      run: sudo rm -rf /home/luciousdev/actions-runner/_work/base-iso/base-iso
 
     - name: Clone the repository
-      run: git clone https://github.com/Mika-Project/base-iso.git /home/luciousdev/actions-runner/_work/base-iso
+      run: git clone https://github.com/Mika-Project/base-iso.git /home/luciousdev/actions-runner/_work/base-iso/base-iso
 
     - name: cd into working directory
       run: cd /home/luciousdev/actions-runner/_work/base-iso/base-iso
