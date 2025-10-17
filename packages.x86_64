@@ -30,7 +30,7 @@ f2fs-tools
 fatresize
 foot-terminfo
 fsarchiver
-gnu-netcat
+openbsd-netcat
 gpart
 gpm
 gptfdisk
@@ -90,7 +90,6 @@ pv
 qemu-guest-agent
 refind
 reflector
-reiserfsprogs
 rp-pppoe
 rsync
 rxvt-unicode-terminfo
@@ -147,7 +146,7 @@ xf86-input-synaptics
 git
 base-devel
 linux-headers
-neofetch
+fastfetch
 nano
 konsole
 thunar
@@ -167,13 +166,14 @@ gvfs
 gvfs-smb
 xdg-user-dirs
 
-calamares
-qt5-tools
+# NOTE: calamares requires plasma-framework5 from AUR (but is not avaliable)
+# So we need to use archinstall instead
+#calamares
+#qt5-tools
 
 # added package for plasma
 plasma-nm
 kate
-packagekit-qt5
 
 # Audio
 pipewire
