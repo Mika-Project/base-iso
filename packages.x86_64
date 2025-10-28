@@ -160,16 +160,22 @@ btop
 cmake
 yay
 
+kirigami2
+qt5-graphicaleffects
+qt5-quickcontrols
+qt5-quickcontrols2
+yay
+
 networkmanager
 gparted
 gvfs
 gvfs-smb
 xdg-user-dirs
 
-# NOTE: calamares requires plasma-framework5 from AUR (but is not avaliable)
-# So we need to use archinstall instead
-#calamares
-#qt5-tools
+boost-python311-shim
+kpmcore12-shim
+icu73-shim
+calamares
 
 # added package for plasma
 plasma-nm

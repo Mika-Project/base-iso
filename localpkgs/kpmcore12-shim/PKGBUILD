@@ -1,0 +1,33 @@
+# Maintainer: Mika Project <maintainers@mika-linux.com>
+
+pkgname=kpmcore12-shim
+pkgver=23.08.5
+pkgrel=1
+pkgdesc="Ships libkpmcore.so.12 for Calamares compatibility"
+arch=('x86_64')
+url='https://apps.kde.org/partitionmanager/'
+license=('GPL-2.0-or-later')
+depends=('gcc-libs' 'glibc' 'qt5-base' 'kcoreaddons5' 'ki18n5' 'kwidgetsaddons5' 'polkit-qt5' 'smartmontools' 'util-linux-libs')
+source=("kpmcore-${pkgver}-${pkgrel}-x86_64.pkg.tar.zst")
+sha256sums=('ac9c97025dccf78a1bec820f9bd36f357ccb2ce5ec892a7d66b0ae1eb4b4f9ad')
+
+package() {
+  local archive="${srcdir}/kpmcore-${pkgver}-${pkgrel}-x86_64.pkg.tar.zst"
+  local libactual="libkpmcore.so.${pkgver}"
+
+  bsdtar -xf "${archive}" -C "${srcdir}" \
+    "usr/lib/${libactual}" \
+    "usr/lib/qt/plugins/kpmcore/pmdummybackendplugin.so" \
+    "usr/lib/qt/plugins/kpmcore/pmsfdiskbackendplugin.so"
+
+  install -Dm755 "${srcdir}/usr/lib/${libactual}" "${pkgdir}/usr/lib/${libactual}"
+  ln -s "${libactual}" "${pkgdir}/usr/lib/libkpmcore.so.12"
+  install -Dm755 "${srcdir}/usr/lib/qt/plugins/kpmcore/pmdummybackendplugin.so" \
+    "${pkgdir}/usr/lib/qt/plugins/kpmcore/pmdummybackendplugin.so"
+  install -Dm755 "${srcdir}/usr/lib/qt/plugins/kpmcore/pmsfdiskbackendplugin.so" \
+    "${pkgdir}/usr/lib/qt/plugins/kpmcore/pmsfdiskbackendplugin.so"
+
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  printf 'kpmcore12-shim bundles the shared object from kpmcore %s.\nSee https://invent.kde.org/system/kpmcore for license details.' "${pkgver}" \
+    > "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
