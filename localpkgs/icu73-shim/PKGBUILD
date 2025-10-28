@@ -1,0 +1,41 @@
+# Maintainer: Mika Project <maintainers@mika-linux.com>
+
+pkgname=icu73-shim
+pkgver=73.2
+pkgrel=1
+pkgdesc="Provides ICU 73 runtime libraries for legacy Calamares build"
+arch=('x86_64')
+url='https://icu.unicode.org'
+license=('custom:ICU')
+depends=('gcc-libs' 'glibc')
+source=("icu-${pkgver}-1-x86_64.pkg.tar.zst")
+sha256sums=('SKIP')
+
+package() {
+  local archive="${srcdir}/icu-${pkgver}-1-x86_64.pkg.tar.zst"
+  local libs=(
+    'usr/lib/libicudata.so.73'
+    'usr/lib/libicudata.so.73.2'
+    'usr/lib/libicui18n.so.73'
+    'usr/lib/libicui18n.so.73.2'
+    'usr/lib/libicuio.so.73'
+    'usr/lib/libicuio.so.73.2'
+    'usr/lib/libicutest.so.73'
+    'usr/lib/libicutest.so.73.2'
+    'usr/lib/libicutu.so.73'
+    'usr/lib/libicutu.so.73.2'
+    'usr/lib/libicuuc.so.73'
+    'usr/lib/libicuuc.so.73.2'
+  )
+
+  bsdtar -xf "${archive}" -C "${srcdir}" "${libs[@]}" usr/share/licenses/icu/LICENSE
+
+  install -d "${pkgdir}/usr/lib" "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  for lib in "${libs[@]}"; do
+    install -m755 "${srcdir}/${lib}" "${pkgdir}/usr/lib/"
+  done
+
+  install -m644 "${srcdir}/usr/share/licenses/icu/LICENSE" \
+    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

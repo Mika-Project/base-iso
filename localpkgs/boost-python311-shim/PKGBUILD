@@ -1,0 +1,20 @@
+# Maintainer: Mika Project <maintainers@mika-linux.com>
+
+pkgname=boost-python311-shim
+pkgver=1.83.0
+pkgrel=2
+pkgdesc="Compatibility shim providing libboost_python311.so.1.83.0"
+arch=('x86_64')
+url='https://www.boost.org/'
+license=('custom:Boost')
+source=("boost-libs-${pkgver}-${pkgrel}-x86_64.pkg.tar.zst")
+sha256sums=('d15411fb8e7230acbb2c2644e4b8bd7c49bb68f59736c4b1ce4594b167d7c60e')
+
+package() {
+  local archive="${srcdir}/boost-libs-${pkgver}-${pkgrel}-x86_64.pkg.tar.zst"
+  local so_path="usr/lib/libboost_python311.so.1.83.0"
+  install -d "${pkgdir}/usr/lib" "${pkgdir}/usr/share/licenses/${pkgname}"
+  bsdtar -xOf "${archive}" "${so_path}" > "${pkgdir}/${so_path}"
+  bsdtar -xOf "${archive}" "usr/share/licenses/boost-libs/LICENSE_1_0.txt" \
+    > "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

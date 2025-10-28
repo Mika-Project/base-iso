@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Calamares Installer
+Comment=Graphical installer for Mika Linux
+Exec=/usr/bin/calamares
+Icon=calamares
+Categories=System;
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
+X-GNOME-Autostart-enabled=true

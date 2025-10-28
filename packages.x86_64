@@ -30,7 +30,7 @@ f2fs-tools
 fatresize
 foot-terminfo
 fsarchiver
-gnu-netcat
+openbsd-netcat
 gpart
 gpm
 gptfdisk
@@ -90,7 +90,6 @@ pv
 qemu-guest-agent
 refind
 reflector
-reiserfsprogs
 rp-pppoe
 rsync
 rxvt-unicode-terminfo
@@ -147,7 +146,7 @@ xf86-input-synaptics
 git
 base-devel
 linux-headers
-neofetch
+fastfetch
 nano
 konsole
 thunar
@@ -161,19 +160,26 @@ btop
 cmake
 yay
 
+kirigami2
+qt5-graphicaleffects
+qt5-quickcontrols
+qt5-quickcontrols2
+yay
+
 networkmanager
 gparted
 gvfs
 gvfs-smb
 xdg-user-dirs
 
+boost-python311-shim
+kpmcore12-shim
+icu73-shim
 calamares
-qt5-tools
 
 # added package for plasma
 plasma-nm
 kate
-packagekit-qt5
 
 # Audio
 pipewire
