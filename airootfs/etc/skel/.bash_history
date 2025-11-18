@@ -1,4 +1,0 @@
-neofetch
-exit
-top
-exit
