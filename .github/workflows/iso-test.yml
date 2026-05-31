@@ -1,16 +1,15 @@
 # Build the ISO and verify it boots + installs, all in QEMU.
 #
-# Manual-trigger only for now (workflow_dispatch). When you're happy with it,
-# add the push triggers you want, e.g.:
-#   on:
-#     push:
-#       branches: [develop, main]
+# Runs automatically on every push to main/develop, and can still be triggered
+# by hand from the Actions tab (workflow_dispatch).
 #
 # Requires a runner with /dev/kvm for reasonable speed. The harness falls back
 # to slow TCG emulation if KVM is absent, so it still passes without it.
 name: Mika ISO boot & install test
 
 on:
+  push:
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
