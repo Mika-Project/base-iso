@@ -1,0 +1,47 @@
+# Build the ISO and verify it boots + installs, all in QEMU.
+#
+# Manual-trigger only for now (workflow_dispatch). When you're happy with it,
+# add the push triggers you want, e.g.:
+#   on:
+#     push:
+#       branches: [develop, main]
+#
+# Requires a runner with /dev/kvm for reasonable speed. The harness falls back
+# to slow TCG emulation if KVM is absent, so it still passes without it.
+name: Mika ISO boot & install test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    # Reuses the self-hosted Arch runner from main.yml. To run on a
+    # GitHub-hosted box instead, swap this for `runs-on: ubuntu-latest` and run
+    # the build/test steps inside a privileged `archlinux:latest` container.
+    runs-on:
+      - self-hosted
+      - Arch
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install test dependencies
+        run: sudo pacman -Sy --needed --noconfirm archiso qemu-base edk2-ovmf libisoburn python
+
+      - name: Build the ISO
+        run: sudo mkarchiso -v -w /tmp/archiso-tmp -o out .
+
+      - name: Boot smoke test (BIOS + UEFI)
+        run: scripts/test/boot-test.sh both
+
+      - name: Scripted install test (UEFI)
+        run: scripts/test/install-test.sh uefi
+
+      - name: Upload ISO artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mika-iso
+          path: out/*.iso
+          if-no-files-found: warn
