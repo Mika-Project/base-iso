@@ -39,6 +39,7 @@ DISK_SIZE="${DISK_SIZE:-20G}"
 BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"          # reach the live boot sentinel
 INSTALL_TIMEOUT="${INSTALL_TIMEOUT:-1800}"   # full scripted install
 POSTINSTALL_TIMEOUT="${POSTINSTALL_TIMEOUT:-300}" # boot the installed disk
+SHOW_SERIAL="${SHOW_SERIAL:-1}"              # 1 = stream guest serial live; 0 = quiet until failure
 
 # ----------------------------------------------------------------------------
 # Logging
@@ -46,6 +47,26 @@ POSTINSTALL_TIMEOUT="${POSTINSTALL_TIMEOUT:-300}" # boot the installed disk
 log()  { printf '\033[1;34m[test]\033[0m %s\n' "$*" >&2; }
 ok()   { printf '\033[1;32m[ ok ]\033[0m %s\n' "$*" >&2; }
 fail() { printf '\033[1;31m[fail]\033[0m %s\n' "$*" >&2; exit 1; }
+
+# Stream a logfile to stderr live, each line dimmed and prefixed, until stopped.
+# Lets you watch the guest serial console (boot/install progress) as it happens.
+_TAIL_PID=""
+start_serial_stream() {
+    local logfile="$1"
+    [[ "$SHOW_SERIAL" == "1" ]] || return 0
+    : > "$logfile"   # create now so tail -F has something to follow
+    ( tail -n0 -F "$logfile" 2>/dev/null \
+        | sed -u $'s/^/\033[2m[serial]\033[0m /' >&2 ) &
+    _TAIL_PID=$!
+}
+stop_serial_stream() {
+    [[ -n "$_TAIL_PID" ]] || return 0
+    # let the last lines flush, then stop the tailer
+    sleep 1
+    kill "$_TAIL_PID" 2>/dev/null || true
+    wait "$_TAIL_PID" 2>/dev/null || true
+    _TAIL_PID=""
+}
 
 # ----------------------------------------------------------------------------
 # Dependencies & assets
@@ -88,6 +109,7 @@ extract_iso_boot() {
     # install_dir is "arch" (profiledef.sh). Extract kernel + any microcode +
     # the main initramfs.
     local base="/arch/boot"
+    log "extracting kernel + initramfs from $(basename "$iso") ..."
     xorriso -osirrox on -indev "$iso" \
         -extract "${base}/x86_64/vmlinuz-linux"     "${dest}/vmlinuz-linux" \
         -extract "${base}/x86_64/initramfs-linux.img" "${dest}/initramfs-linux.img" \
@@ -102,7 +124,13 @@ extract_iso_boot() {
         fi
     done
     initrds+=("${dest}/initramfs-linux.img")
-    INITRD="$(IFS=,; echo "${initrds[*]}")"
+    # Microcode + initramfs are concatenated cpio archives; the kernel reads the
+    # early-microcode image and then the real initramfs out of a single blob.
+    # Concatenate into one file rather than passing `-initrd a,b,c` — QEMU does
+    # not split the comma-joined value, it tries to open it as one path.
+    INITRD="${dest}/initrd.img"
+    cat "${initrds[@]}" > "$INITRD"
+    log "initrd assembled from ${#initrds[@]} part(s): ${initrds[*]##*/}"
 }
 
 accel_args() {
@@ -168,12 +196,15 @@ _qemu() {
         fw_args=(-drive "if=pflash,format=raw,readonly=on,file=${code}"
                  -drive "if=pflash,format=raw,file=${vars}")
     fi
-    log "qemu (${firmware}, timeout ${timeout_s}s) -> $(basename "$logfile")"
+    log "qemu (${firmware}, timeout ${timeout_s}s, accel:${accel}) -> $(basename "$logfile")"
+    [[ "$SHOW_SERIAL" == "1" ]] && log "streaming guest serial live (set SHOW_SERIAL=0 to silence):"
+    start_serial_stream "$logfile"
     # shellcheck disable=SC2086
     timeout --foreground "$timeout_s" \
         qemu-system-x86_64 $accel -m "$VM_MEM" -smp "$VM_SMP" "${fw_args[@]}" \
             -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
             -display none -no-reboot -serial "file:${logfile}" "$@" || true
+    stop_serial_stream
     [[ -n "$vars" ]] && rm -f "$vars"
 }
 
@@ -185,8 +216,10 @@ boot_iso_with_payload() {
     iso="$(find_iso)"
     label="$(iso_label "$iso")"
     tmpd="$(mktemp -d)"
+    log "ISO label: ${label}"
     extract_iso_boot "$iso" "$tmpd"
     url="$(guest_payload_url "$payload")"
+    log "guest will fetch payload from ${url}"
     # cow_spacesize gives the live overlay room; console=ttyS0 sends boot
     # messages to our captured serial; script= triggers the payload on tty1.
     local cmdline="archisobasedir=arch archisolabel=${label} cow_spacesize=4G console=tty0 console=ttyS0,115200 script=${url}"
