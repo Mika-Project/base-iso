@@ -25,6 +25,13 @@
 #    the guest at 10.0.2.2) and the payload echoes its result to /dev/ttyS0 so
 #    the headless serial log captures it. This keeps all test code OUT of the
 #    production ISO.
+#
+#    Mika boots into SDDM (graphical.target) by default, and SDDM's
+#    display-manager.service Conflicts=getty@tty1.service, so tty1 autologin —
+#    the only trigger for the script= hook — never runs. We therefore append
+#    `systemd.unit=multi-user.target` to the boot cmdline (see
+#    boot_iso_with_payload) so the live ISO comes up in text mode and the stock
+#    hook fires. Still zero changes to the production ISO.
 
 set -euo pipefail
 
@@ -33,6 +40,7 @@ REPO_ROOT="$(cd "${TEST_DIR}/../.." && pwd)"
 PAYLOAD_DIR="${TEST_DIR}/payloads"
 
 # Tunables (override via environment).
+_VM_MEM_SET="${VM_MEM:+1}"          # remember if the caller set VM_MEM explicitly
 VM_MEM="${VM_MEM:-4096}"
 VM_SMP="${VM_SMP:-2}"
 DISK_SIZE="${DISK_SIZE:-20G}"
@@ -47,6 +55,40 @@ SHOW_SERIAL="${SHOW_SERIAL:-1}"              # 1 = stream guest serial live; 0 =
 log()  { printf '\033[1;34m[test]\033[0m %s\n' "$*" >&2; }
 ok()   { printf '\033[1;32m[ ok ]\033[0m %s\n' "$*" >&2; }
 fail() { printf '\033[1;31m[fail]\033[0m %s\n' "$*" >&2; exit 1; }
+
+# Keep big scratch files (assembled initrd, OVMF vars, the install qcow2, serial
+# logs) OFF a tmpfs. On many systemd setups /tmp (and any TMPDIR pointing into
+# it) is RAM-backed, so writing a multi-GB rootfs image there exhausts memory
+# and the host OOMs mid-test (or hits a tmpfs quota). If the effective temp dir
+# is a tmpfs, redirect to a disk-backed one: /var/tmp, else a gitignored
+# repo-local dir. Set TMPDIR to a non-tmpfs path yourself to override.
+_eff_tmp="${TMPDIR:-/tmp}"
+if [[ "$(stat -f -c %T "$_eff_tmp" 2>/dev/null)" == "tmpfs" ]]; then
+    for _cand in /var/tmp/mika-iso-test "${HOME}/.cache/mika-iso-test"; do
+        mkdir -p "$_cand" 2>/dev/null || continue
+        [[ -w "$_cand" ]] || continue
+        [[ "$(stat -f -c %T "$_cand" 2>/dev/null)" == "tmpfs" ]] && continue
+        export TMPDIR="$_cand"
+        log "scratch was on tmpfs (${_eff_tmp}); redirected to disk (TMPDIR=${TMPDIR})"
+        break
+    done
+fi
+unset _eff_tmp _cand 2>/dev/null || true
+
+# Guard against an oversized guest on a RAM-tight host. A VM bigger than the
+# host can spare makes a low-memory machine thrash and OOM mid-test — which can
+# take the whole desktop/editor down with it (no swap = no cushion). If the
+# caller did not set VM_MEM explicitly, cap the default to what is free now,
+# keeping ~1.5G headroom for the host. Set VM_MEM=... to override this entirely.
+if [[ -z "${_VM_MEM_SET:-}" ]]; then
+    _avail_mb="$(free -m 2>/dev/null | awk 'NR==2{print $7}')"
+    if [[ "${_avail_mb:-0}" =~ ^[0-9]+$ ]] && (( _avail_mb > 0 )) && (( VM_MEM > _avail_mb - 1536 )); then
+        _safe=$(( _avail_mb - 1536 )); (( _safe < 1024 )) && _safe=1024
+        log "host has ~${_avail_mb}MB free; capping VM_MEM ${VM_MEM}->${_safe}MB (set VM_MEM= to override)"
+        VM_MEM="$_safe"
+    fi
+    unset _avail_mb _safe 2>/dev/null || true
+fi
 
 # Stream a logfile to stderr live, each line dimmed and prefixed, until stopped.
 # Lets you watch the guest serial console (boot/install progress) as it happens.
@@ -196,14 +238,18 @@ _qemu() {
         fw_args=(-drive "if=pflash,format=raw,readonly=on,file=${code}"
                  -drive "if=pflash,format=raw,file=${vars}")
     fi
-    log "qemu (${firmware}, timeout ${timeout_s}s, accel:${accel}) -> $(basename "$logfile")"
+    # SHOW_GUI=1 opens a QEMU window (handy for watching/debugging a boot); the
+    # default headless 'none' is what CI uses.
+    local display_arg="none"
+    [[ "${SHOW_GUI:-0}" == "1" ]] && { display_arg="gtk"; log "SHOW_GUI=1 -> opening a QEMU window"; }
+    log "qemu (${firmware}, timeout ${timeout_s}s, accel:${accel}, display:${display_arg}) -> $(basename "$logfile")"
     [[ "$SHOW_SERIAL" == "1" ]] && log "streaming guest serial live (set SHOW_SERIAL=0 to silence):"
     start_serial_stream "$logfile"
     # shellcheck disable=SC2086
     timeout --foreground "$timeout_s" \
         qemu-system-x86_64 $accel -m "$VM_MEM" -smp "$VM_SMP" "${fw_args[@]}" \
             -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
-            -display none -no-reboot -serial "file:${logfile}" "$@" || true
+            -display "$display_arg" -no-reboot -serial "file:${logfile}" "$@" || true
     stop_serial_stream
     [[ -n "$vars" ]] && rm -f "$vars"
 }
@@ -222,10 +268,36 @@ boot_iso_with_payload() {
     log "guest will fetch payload from ${url}"
     # cow_spacesize gives the live overlay room; console=ttyS0 sends boot
     # messages to our captured serial; script= triggers the payload on tty1.
-    local cmdline="archisobasedir=arch archisolabel=${label} cow_spacesize=4G console=tty0 console=ttyS0,115200 script=${url}"
+    #
+    # systemd.unit=multi-user.target: Mika's default.target is graphical, so a
+    # normal boot starts SDDM, whose display-manager.service Conflicts with
+    # getty@tty1 — meaning tty1 root-autologin (and thus archiso's .zlogin ->
+    # .automated_script.sh, which is the ONLY thing that runs script=) never
+    # fires. Forcing multi-user.target boots to text mode, getty@tty1 autologin
+    # runs, and the stock archiso hook executes the payload. This needs no
+    # changes to the production ISO; the override lives only in this test cmdline.
+    # systemd.wants=network-online.target: archiso's .automated_script.sh waits
+    # for `systemctl is-active network-online.target` before fetching script=.
+    # The live ISO runs systemd-networkd (so the NIC does get a DHCP lease), but
+    # nothing in a multi-user boot pulls network-online.target *active*, so that
+    # wait would hang forever. Requesting the target on the cmdline makes systemd
+    # run systemd-networkd-wait-online and activate it once the NIC is up.
+    #
+    # EXTRA_CMDLINE lets you append debug kernel params from the environment,
+    # e.g. EXTRA_CMDLINE="rootdelay=60 systemd.log_level=debug".
+    local cmdline="archisobasedir=arch archisolabel=${label} cow_spacesize=4G console=tty0 console=ttyS0,115200 systemd.unit=multi-user.target systemd.wants=network-online.target script=${url}${EXTRA_CMDLINE:+ ${EXTRA_CMDLINE}}"
+    log "kernel cmdline: ${cmdline}"
+    # Attach the ISO as an EXPLICIT virtio-scsi CD-ROM. A bare
+    # `-drive media=cdrom` (no if=) is NOT auto-wired to the IDE controller by
+    # modern QEMU, so the guest never sees the disc and archiso can't find its
+    # medium by label. virtio-scsi uses drivers the archiso initramfs ships
+    # (virtio_scsi + sr_mod) and yields /dev/sr0, leaving /dev/vda free for an
+    # install target disk passed via "$@".
     _qemu "$fw" "$timeout_s" "$logfile" -- \
         -kernel "$KERNEL" -initrd "$INITRD" -append "$cmdline" \
-        -drive "file=${iso},media=cdrom,readonly=on" \
+        -device virtio-scsi-pci,id=scsi0 \
+        -drive "id=cd0,if=none,format=raw,readonly=on,file=${iso}" \
+        -device scsi-cd,bus=scsi0.0,drive=cd0 \
         "$@"
     rm -rf "$tmpd"
 }

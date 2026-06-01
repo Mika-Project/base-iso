@@ -51,6 +51,33 @@ Point at a specific ISO with `ISO=/path/to/x.iso scripts/test/boot-test.sh`.
 Tunables (env vars): `VM_MEM`, `VM_SMP`, `DISK_SIZE`, `BOOT_TIMEOUT`,
 `INSTALL_TIMEOUT`, `POSTINSTALL_TIMEOUT`.
 
+## Memory & scratch (don't OOM your desktop)
+
+The install test writes a multi-GB disk image and an extracted initramfs. Two
+gotchas on a developer machine, both handled automatically but worth knowing:
+
+* **Scratch goes on disk, never tmpfs.** If `/tmp` (or `$TMPDIR`) is a RAM-backed
+  tmpfs — common with systemd — the harness redirects its scratch to
+  `/var/tmp/mika-iso-test` so a 2-3 GB qcow2 doesn't land in RAM and OOM the box.
+  Override with a non-tmpfs `TMPDIR=...`.
+* **The guest won't out-size the host.** If you didn't set `VM_MEM`, it's capped
+  to leave ~1.5 GB free, so the VM can't push a low-memory host into swap-death
+  (there may be no swap). On a tight machine just run `VM_MEM=2048 ...`.
+
+If a run is **killed** (OOM, editor crash, `kill -9`) its scratch dir leaks — a
+leftover install qcow2 can be several GB. Reclaim it (and any stray VM) with:
+
+```bash
+scripts/test/cleanup.sh
+```
+
+## Interactive debugging
+
+`scripts/test/debug-boot.sh [bios|uefi]` opens a **QEMU window** (not headless)
+with the live console *in* the window, so if archiso drops to its emergency
+shell you can poke around (`lsblk`, `blkid`). `SHOW_GUI=1` does the same for the
+normal `boot-test.sh`, and `EXTRA_CMDLINE="..."` appends kernel params.
+
 ## CI wiring (decide later — both options work)
 
 The scripts are runner-agnostic; the only requirement for *fast* runs is

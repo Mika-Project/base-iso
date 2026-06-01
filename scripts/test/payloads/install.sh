@@ -19,14 +19,22 @@ exec >/dev/ttyS0 2>&1
 echo "MIKA_INSTALL_START"
 
 DISK="/dev/vda"
-SRC="/run/archiso/airootfs"   # pristine read-only squashfs (Calamares unpackfs source)
+# Mount the pristine root squashfs exactly where Calamares' unpackfs.conf reads
+# it from: archiso keeps the boot medium at /run/archiso/bootmnt and the
+# read-only root image is arch/x86_64/airootfs.sfs on it. We mount that .sfs
+# ourselves instead of assuming a transient /run/archiso/airootfs mountpoint,
+# whose path varies between archiso versions.
+SFS="/run/archiso/bootmnt/arch/x86_64/airootfs.sfs"
+SRC="$(mktemp -d)"
 
 # Wait for pacman-init etc. so the copied keyring/db is consistent.
 timeout 180 systemctl is-system-running --wait >/dev/null 2>&1 || true
 
 if [[ -d /sys/firmware/efi ]]; then FW="uefi"; else FW="bios"; fi
-echo "firmware=${FW} target=${DISK} source=${SRC}"
-[[ -d "$SRC" ]] || { echo "ERROR: live source $SRC not found"; exit 1; }
+echo "firmware=${FW} target=${DISK} squashfs=${SFS}"
+[[ -f "$SFS" ]] || { echo "ERROR: live squashfs $SFS not found"; exit 1; }
+mount -t squashfs -o ro "$SFS" "$SRC"
+echo "mounted live root: ${SFS} -> ${SRC}"
 
 echo "== partitioning =="
 sgdisk --zap-all "$DISK"
@@ -52,8 +60,23 @@ fi
 echo "== copying live root filesystem =="
 # cp -a preserves attrs; the squashfs is already a clean installed-style tree.
 cp -a "${SRC}/." /mnt/
+umount "$SRC"; rmdir "$SRC" 2>/dev/null || true
+
+echo "== installing kernel + microcode =="
+# archiso keeps the kernel and microcode OUT of the squashfs (served from the
+# ISO), so /boot has no vmlinuz after the rootfs copy and mkinitcpio/GRUB would
+# fail. Copy them from the boot medium, like Calamares' unpackfs.conf does. The
+# matching kernel modules are already in the copied rootfs (/usr/lib/modules).
+BOOTSRC="/run/archiso/bootmnt/arch/boot"
+mkdir -p /mnt/boot
+cp "${BOOTSRC}/x86_64/vmlinuz-linux" /mnt/boot/vmlinuz-linux
+for _uc in intel-ucode.img amd-ucode.img; do
+    [[ -f "${BOOTSRC}/${_uc}" ]] && cp "${BOOTSRC}/${_uc}" "/mnt/boot/${_uc}"
+done
 
 echo "== fstab =="
+# Start from a clean fstab (the live image ships its own archiso fstab).
+: > /mnt/etc/fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
 echo "== de-archiso-ifying + bootloader =="
@@ -81,7 +104,7 @@ sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 
 systemctl enable serial-getty@ttyS0.service
 systemctl enable NetworkManager.service 2>/dev/null || true
 
-if [[ -d /sys/firmware/efi ]]; then
+if [[ "${FW}" == "uefi" ]]; then
     grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB --removable
 else
     grub-install --target=i386-pc ${DISK}
