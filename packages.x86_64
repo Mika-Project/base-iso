@@ -30,7 +30,7 @@ f2fs-tools
 fatresize
 foot-terminfo
 fsarchiver
-gnu-netcat
+openbsd-netcat
 gpart
 gpm
 gptfdisk
@@ -90,7 +90,7 @@ pv
 qemu-guest-agent
 refind
 reflector
-reiserfsprogs
+# reiserfsprogs (removed - ReiserFS deprecated)
 rp-pppoe
 rsync
 rxvt-unicode-terminfo
@@ -125,9 +125,13 @@ zsh
 dolphin
 
 
-# DE 
+# DE
 
 plasma-meta
+# X11 session (KDE split it out of plasma-workspace in Plasma 6.6; pulls kwin-x11).
+# The live ISO autologins into the X11 session for reliable boot on any hardware;
+# Wayland (plasma.desktop) stays installed and selectable at the SDDM greeter.
+plasma-x11-session
 xorg
 
 # Video Driver 
@@ -147,7 +151,7 @@ xf86-input-synaptics
 git
 base-devel
 linux-headers
-neofetch
+fastfetch
 nano
 konsole
 thunar
@@ -167,13 +171,28 @@ gvfs
 gvfs-smb
 xdg-user-dirs
 
+boost-python311-shim
+python310-shim
+# yaml-cpp 0.8 soname shim: the pinned calamares-3.4.0 was built against
+# yaml-cpp 0.8 (libyaml-cpp.so.0.8) but extra now ships yaml-cpp 0.9
+# (libyaml-cpp.so.0.9), so calamares failed to start with
+# "libyaml-cpp.so.0.8: cannot open shared object file". Ships the genuine 0.8 lib.
+yaml-cpp08-shim
 calamares
-qt5-tools
+# Keyboard-layout preview for the Calamares keyboard page (from mikalinux-repo)
+ckbcomp
 
 # added package for plasma
+# Display manager. plasma-meta 6.6 demoted sddm from a hard dependency to an
+# optdepend, so it stopped being pulled in automatically and the live ISO booted
+# to a black screen (display-manager.service -> /usr/bin/sddm = status 203/EXEC,
+# binary missing). ALWAYS list the display manager explicitly so a desktop ISO
+# can never silently lose it again on an upstream dependency change.
+sddm
+sddm-kcm
 plasma-nm
 kate
-packagekit-qt5
+packagekit-qt6
 
 # Audio
 pipewire

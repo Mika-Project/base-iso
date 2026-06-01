@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Install Mika Linux
+GenericName=System Installer
+Comment=Install Mika Linux to this computer
+Icon=calamares
+# Launch Calamares on the live desktop. pkexec elevates to root; the live user
+# `mika` is in `wheel` and /etc/polkit-1/rules.d/49-nopasswd_global.rules grants
+# wheel YES, so no password is asked. The short sleep lets Plasma's polkit
+# authentication agent come up first (autostart phase 2) so pkexec has an agent.
+# TryExec=calamares makes this entry self-disable on the INSTALLED system, where
+# Calamares has been removed — so it only ever auto-runs on the live ISO.
+TryExec=calamares
+Exec=sh -c "sleep 3; pkexec calamares"
+Terminal=false
+X-KDE-autostart-phase=2
+X-GNOME-Autostart-enabled=true
