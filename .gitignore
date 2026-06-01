@@ -4,3 +4,27 @@ work/
 recently-used.xbel
 recently-used.xbel.bak
 airootfs/builds/
+# test harness scratch
+scripts/test/calamares-capture.log
+scripts/test/.run-disk.qcow2
+scripts/test/.run-OVMF_VARS.fd
+
+# local notes & scratch docs (keep the repo tree clean)
+.claude/
+*.md
+!README.md
+
+# makepkg build scratch (PKGBUILD is kept; pkg/src/binaries are regenerated)
+localpkgs/*/pkg/
+localpkgs/*/src/
+localpkgs/*/*.pkg.tar.zst
+
+# live-user runtime state (regenerated at runtime, not image config)
+airootfs/home/mika/.cache/
+airootfs/home/mika/.bash_history
+airootfs/home/mika/**/*.log
+
+# test-harness run scratch (serial logs + throwaway VM disks)
+scripts/test/*.log
+scripts/test/*.qcow2
+scripts/test/*.fd

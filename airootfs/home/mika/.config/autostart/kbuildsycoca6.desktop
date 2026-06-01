@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Rebuild KDE service cache (live)
+Comment=Build the ksycoca6 database so the application launcher works in the live session
+# The live image only carried a stale Plasma-5 ksycoca5 cache; Plasma 6 needs a
+# fresh ksycoca6. Now that /home/mika is owned by mika (profiledef trailing slash
+# makes archiso chown it recursively), this builds the cache at autostart phase 0,
+# before plasmashell needs it, so the menu/search is populated on first login.
+Exec=kbuildsycoca6 --noincremental
+Terminal=false
+X-KDE-autostart-phase=0
+NoDisplay=true

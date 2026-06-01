@@ -1,0 +1,29 @@
+# Maintainer: Mika Linux
+pkgname=python310-shim
+pkgver=3.10.10
+pkgrel=2
+pkgdesc="Legacy Python 3.10 runtime for Calamares compatibility"
+arch=('x86_64')
+url="https://www.python.org/"
+license=('PSF')
+provides=('python3.10' 'libpython3.10.so.1.0')
+conflicts=()
+
+# Python 3.10.10-1 from Arch Archive
+source=("https://archive.archlinux.org/packages/p/python/python-3.10.10-1-x86_64.pkg.tar.zst")
+sha256sums=('SKIP')
+
+package() {
+  # Extract Python 3.10 runtime from the archive
+  cd "$srcdir"
+
+  # Extract only Python 3.10-specific files (not generic python3 files)
+  bsdtar -xf python-3.10.10-1-x86_64.pkg.tar.zst
+
+  # Install only version-specific files
+  install -Dm755 usr/bin/python3.10 "$pkgdir/usr/bin/python3.10"
+  install -Dm755 usr/lib/libpython3.10.so.1.0 "$pkgdir/usr/lib/libpython3.10.so.1.0"
+
+  # Copy the entire Python 3.10 library directory
+  cp -r usr/lib/python3.10 "$pkgdir/usr/lib/"
+}

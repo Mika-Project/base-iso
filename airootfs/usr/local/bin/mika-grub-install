@@ -1,0 +1,25 @@
+#!/bin/sh
+# Mika wrapper around grub-install used by Calamares (bootloader.conf:grubInstall).
+#
+# For UEFI installs, grub-install tries to register an NVRAM boot entry via
+# efibootmgr. That fails ("EFI variables are not supported on this system" /
+# "efibootmgr failed to register the boot entry") in VMs and on firmware where
+# the EFI variable store isn't writable from the installer chroot, and the whole
+# bootloader step aborts. We add --no-nvram for EFI installs so grub-install
+# skips the NVRAM write but still installs /EFI/<id>/grubx64.efi; Calamares'
+# installEFIFallback then copies it to the firmware's removable path
+# (/EFI/BOOT/BOOTX64.EFI), which boots everywhere without needing NVRAM.
+#
+# BIOS installs are passed through unchanged.
+
+efi=0
+for arg in "$@"; do
+    case "$arg" in
+        --target=*-efi) efi=1 ;;
+    esac
+done
+
+if [ "$efi" = 1 ]; then
+    exec grub-install --no-nvram "$@"
+fi
+exec grub-install "$@"
