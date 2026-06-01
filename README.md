@@ -46,13 +46,27 @@ You can find the ISO file inside out directory.
 
 ## Quicky Test the ISO using QEMU
 
-- Install the optional dependencies qemu-desktop and edk2-ovmf.
-  `sudo pacman -S qemu-desktop edk2-ovmf`
+Install the optional dependencies:
+`sudo pacman -S qemu-desktop edk2-ovmf`
 
-### MBR
+This opens the built ISO (in `out/` after a build) in a QEMU **window** so you can
+click through the desktop and run the Calamares installer by hand:
 
-`run_archiso -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
+- **UEFI:** `run_archiso -u -i out/*.iso`
+- **BIOS/MBR:** `run_archiso -i out/*.iso`
 
-### UEFI
+## Automated boot & install testing (headless)
 
-`run_archiso -u -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso`
+To prove an ISO actually **boots** and **installs into a system that itself boots**
+— without a USB stick — use the QEMU test harness in
+[`scripts/test/`](scripts/test/README.md):
+
+```bash
+scripts/test/boot-test.sh uefi      # boot smoke test
+scripts/test/install-test.sh uefi   # scripted install, then boot the installed disk
+scripts/test/run.sh uefi            # interactive boot in a window (like run_archiso)
+```
+
+On a RAM-tight machine (e.g. 15 GB, no swap) run them with `VM_MEM=2048`; the
+harness keeps its scratch on disk automatically. See
+[`scripts/test/README.md`](scripts/test/README.md) for details.

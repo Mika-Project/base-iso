@@ -31,9 +31,14 @@ if [[ "$FW" == "uefi" ]]; then
 fi
 
 log "interactive boot (${FW}) of ${ISO_PATH} — close the window to quit"
+# Attach the ISO as an explicit virtio-scsi CD-ROM with bootindex=0 so the
+# firmware boots it. A bare `-drive media=cdrom` is not auto-wired by modern
+# QEMU, so the guest/firmware never sees the disc (it would drop to the archiso
+# emergency shell). No -display flag => QEMU opens a normal GUI window.
 # shellcheck disable=SC2086
 exec qemu-system-x86_64 $accel -m "$VM_MEM" -smp "$VM_SMP" "${fw_args[@]}" \
-    -drive "file=${ISO_PATH},media=cdrom,readonly=on" \
-    -drive "file=${DISK},if=virtio,format=qcow2" \
-    -netdev user,id=net0 -device virtio-net-pci,netdev=net0 \
-    -boot d
+    -device virtio-scsi-pci,id=scsi0 \
+    -drive "id=cd0,if=none,format=raw,readonly=on,file=${ISO_PATH}" \
+    -device scsi-cd,bus=scsi0.0,drive=cd0,bootindex=0 \
+    -drive "file=${DISK},if=virtio,format=qcow2,bootindex=1" \
+    -netdev user,id=net0 -device virtio-net-pci,netdev=net0
